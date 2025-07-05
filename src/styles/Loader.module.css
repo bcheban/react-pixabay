@@ -1,0 +1,21 @@
+.Loader {
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  margin: 24px 0;
+  letter-spacing: 0.05em;
+}
+
+@keyframes dots {
+  0%   { content: "Loading";   }
+  33%  { content: "Loading.";  }
+  66%  { content: "Loading.."; }
+  100% { content: "Loading...";}
+}
+
+/* Псевдоелемент для бігаючих крапок */
+.Loader::after {
+  display: inline-block;
+  animation: dots 1s linear infinite;
+  content: "…";           /* fallback якщо анімація не підтримається */
+}

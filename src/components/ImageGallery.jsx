@@ -1,6 +1,6 @@
-import React from 'react';
-import ImageGalleryItem from './ImageGalleryItem';
-import styles from '../styles/ImageGallery.module.css';
+import React from 'react'
+import ImageGalleryItem from './ImageGalleryItem'
+import styles from '../styles/ImageGallery.module.css'
 
 const ImageGallery = ({ images, onImageClick }) => (
   <ul className={styles.ImageGallery}>
@@ -13,7 +13,6 @@ const ImageGallery = ({ images, onImageClick }) => (
       />
     ))}
   </ul>
-);
+)
 
-export default ImageGallery;
-// added changes
+export default ImageGallery

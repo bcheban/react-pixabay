@@ -1,24 +1,21 @@
-import React from 'react';
-import styles from '../styles/ImageGalleryItem.module.css';
+import React from 'react'
+import styles from '../styles/ImageGalleryItem.module.css'
 
-export default class ImageGalleryItem extends React.Component {
-  handleClick = () => {
-    const { largeImageURL, onClick } = this.props;
-    onClick(largeImageURL);           // 👉 передаємо в App
-  };
+class ImageGalleryItem extends React.Component {
+  handleClick = () => this.props.onClick(this.props.largeImageURL)
 
   render() {
-    const { webformatURL } = this.props;
-
     return (
       <li className={styles.ImageGalleryItem}>
         <img
           className={styles.ImageGalleryItemImage}
-          src={webformatURL}
+          src={this.props.webformatURL}
           alt=""
           onClick={this.handleClick}
         />
       </li>
-    );
+    )
   }
 }
+
+export default ImageGalleryItem

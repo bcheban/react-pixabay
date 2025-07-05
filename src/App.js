@@ -1,74 +1,88 @@
-import React from 'react';
-import './App.css';
-import Searchbar from './components/Searchbar';
-import ImageGallery from './components/ImageGallery';
-import Button from './components/Button';
-import Modal from './components/Modal';
-import axios from 'axios';
+import React from 'react'
+import './App.css'
+import Searchbar from './components/Searchbar'
+import ImageGallery from './components/ImageGallery'
+import Button from './components/Button'
+import Modal from './components/Modal'
+import Loader from './components/Loader'
+import axios from 'axios'
 
-axios.defaults.baseURL = 'https://pixabay.com/api';
+axios.defaults.baseURL = 'https://pixabay.com/api'
+const API_KEY = '51105397-aef3055b6813d883a5d382b16'
 
 class App extends React.Component {
   state = {
     images: [],
     page: 1,
     value: '',
-    modalImageURL: null,   
-  };
+    modalImageURL: null,
+    isLoading: false,
+  }
 
   handleSubmit = async value => {
-    this.setState({ value, page: 1, images: [] });
-
+    const query = value.trim()
+    this.setState({ value: query, page: 1, images: [], isLoading: true })
     try {
-      const resp = await axios.get(
-        `/?q=${value}&page=1&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`
-      );
-      this.setState({ images: resp.data.hits });
-    } catch (err) {
-      console.log(err);
+      const { data } = await axios.get('/', {
+        params: {
+          q: query,
+          page: 1,
+          key: API_KEY,
+          image_type: 'photo',
+          orientation: 'horizontal',
+          per_page: 12,
+        },
+      })
+      this.setState({ images: data.hits })
+    } catch (e) {
+      console.error(e)
+    } finally {
+      this.setState({ isLoading: false })
     }
-  };
+  }
 
   loadMore = async () => {
-    const nextPage = this.state.page + 1;
+    const nextPage = this.state.page + 1
+    this.setState({ isLoading: true })
     try {
-      const resp = await axios.get(
-        `/?q=${this.state.value}&page=${nextPage}&key=51105397-aef3055b6813d883a5d382b16&image_type=photo&orientation=horizontal&per_page=12`
-      );
+      const { data } = await axios.get('/', {
+        params: {
+          q: this.state.value,
+          page: nextPage,
+          key: API_KEY,
+          image_type: 'photo',
+          orientation: 'horizontal',
+          per_page: 12,
+        },
+      })
       this.setState(prev => ({
-        images: [...prev.images, ...resp.data.hits],
+        images: [...prev.images, ...data.hits],
         page: nextPage,
-      }));
-    } catch (err) {
-      console.log(err);
+      }))
+    } catch (e) {
+      console.error(e)
+    } finally {
+      this.setState({ isLoading: false })
     }
-  };
+  }
 
-  openModal = largeImageURL => {
-    this.setState({ modalImageURL: largeImageURL });
-  };
-
-  closeModal = () => {
-    this.setState({ modalImageURL: null });
-  };
+  openModal = url => this.setState({ modalImageURL: url })
+  closeModal = () => this.setState({ modalImageURL: null })
 
   render() {
-    const { images, modalImageURL } = this.state;
-
+    const { images, modalImageURL, isLoading } = this.state
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleSubmit} />
-
         <ImageGallery images={images} onImageClick={this.openModal} />
-
-        {images.length > 0 && <Button onClick={this.loadMore} />}
-
+        {isLoading && <Loader />}
+        {images.length > 0 && !isLoading && <Button onClick={this.loadMore} />}
         {modalImageURL && (
           <Modal largeImageURL={modalImageURL} onClose={this.closeModal} />
         )}
       </div>
-    );
+    )
   }
 }
 
-export default App;
+export default App
